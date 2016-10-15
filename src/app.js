@@ -5,7 +5,7 @@ import GistsSync from './gists-sync'
   removed
 */
 
-const cache = {}
+let cache = {}
 const applicationToken = process.env['APPLICATION_TOKEN']
 
 process.on('unhandledRejection', (reason, p) => {
@@ -17,7 +17,7 @@ process.on('unhandledRejection', (reason, p) => {
   )
 })
 
-const sync = GistsSync.of('./examples/', {
+GistsSync.of('./examples/', {
   applicationToken,
   isWatching: true,
   setCache: (name, content) => {
@@ -25,8 +25,8 @@ const sync = GistsSync.of('./examples/', {
     return Promise.resolve()
   },
   clearCache: () => {
-     cache = {}
-     return Promise.resolve()
-   },
+    cache = {}
+    return Promise.resolve()
+  },
   getCache: (name) => Promise.resolve(cache[name])
 })

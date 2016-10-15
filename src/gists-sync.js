@@ -1,8 +1,8 @@
 import path from 'path'
-import fs from 'fs'
 import assert from 'assert'
 import autoBind from 'auto-bind'
 import { EventEmitter2 } from 'eventemitter2'
+import { readFile } from './fs-promise'
 import GistsWatcher from './gists-watcher'
 import GistsApi from './gists-api'
 import {
@@ -83,18 +83,16 @@ class GistsSync extends EventEmitter2 {
 
   async getFileDataFromPath (path) {
     const filename = path.split(/\//).pop()
-    const content = fs.readFileSync(path).toString('utf8') || '.'
+    const content = readFile(path).toString('utf8') || '.'
     return { filename, content }
   }
 
   async hasExisting (filename) {
-    const gists = await this.getAllGist()
     return !!this.getGistByFileName(filename)
   }
 
   async onFileChanged (path) {
     const { filename, content } = await this.getFileDataFromPath(path)
-    const gists = await this.getAllGist()
     const gist = serializeSingleFileGist(
       filename,
       content,
@@ -140,7 +138,7 @@ class GistsSync extends EventEmitter2 {
   }
 
   async getAllGist () {
-    const { applicationToken, setCache, getCache } = this.options
+    const { setCache, getCache } = this.options
     const {login} = await this.getUser()
     let gists = await getCache(`${login}:gists`)
     if (!gists) {
