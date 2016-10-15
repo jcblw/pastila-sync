@@ -1,37 +1,37 @@
-import { Gaze } from 'gaze'
+import chokidar from 'chokidar'
 
 const eventMapping = {
   error: 'onError',
-  changed: 'onFileChanged',
-  added: 'onFileAdded',
+  change: 'onFileChanged',
+  add: 'onFileAdded',
   deleted: 'onFileRemoved'
 }
 
 class GistsWatcher {
   constructor (pattern, options) {
-    this.pattern = options
+    this.pattern = pattern
     this.options = options
     if (options.autostart) {
-      // auto create/watch files
       this.createWatcher()
     }
   }
 
-  bindWatcherEvents () {
+  bindWatcherEvents (watcher) {
     const { options } = this
     Object.keys(eventMapping).forEach(eventName => {
       const method = eventMapping[eventName]
       if (typeof options[method] !== 'function') return
-      this.watcher.on(eventName, options[method])
+      watcher.on(eventName, options[method])
     })
   }
 
   createWatcher () {
     this.destroyWatcher()
-    this.watcher = new Gaze(
+    this.watcher = chokidar.watch(
       this.pattern,
       this.options
     )
+    this.bindWatcherEvents(this.watcher)
   }
 
   setPattern (pattern) {

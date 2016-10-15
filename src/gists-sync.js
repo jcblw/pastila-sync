@@ -1,4 +1,5 @@
 import path from 'path'
+import fs from 'fs'
 import assert from 'assert'
 import autoBind from 'auto-bind'
 import { EventEmitter2 } from 'eventemitter2'
@@ -40,10 +41,10 @@ class GistsSync extends EventEmitter2 {
     getCache,
     applicationToken
   }) {
-    assert(typeof setCache === 'function', 'The GistSync class has a way to set cache')
-    assert(typeof clearCache === 'function', 'The GistSync class has a way to clear cache')
-    assert(typeof getCache === 'function', 'The GistSync class has a way to getCache')
-    assert(typeof applicationToken === 'string', 'The GistSync class has a user token to access gists')
+    assert(typeof setCache === 'function', 'The GistSync class needs a way to set cache')
+    assert(typeof clearCache === 'function', 'The GistSync class needs a way to clear cache')
+    assert(typeof getCache === 'function', 'The GistSync class needs a way to getCache')
+    assert(typeof applicationToken === 'string', 'The GistSync class needs a user token to access gists')
   }
 
   updateToken (token) { this.api = new GistsApi(token) }
@@ -66,7 +67,7 @@ class GistsSync extends EventEmitter2 {
 
   getPattern (directory) {
     const dir = path.resolve(process.cwd(), directory)
-    return `${dir}/*.md`
+    return `${dir}/`
   }
 
   setDirectory (directory) {
@@ -80,7 +81,19 @@ class GistsSync extends EventEmitter2 {
 
   onError (err) { this.emit('error', err) }
 
-  async onFileChanged (filename, content) {
+  async getFileDataFromPath (path) {
+    const filename = path.split(/\//).pop()
+    const content = fs.readFileSync(path).toString('utf8') || '.'
+    return { filename, content }
+  }
+
+  async hasExisting (filename) {
+    const gists = await this.getAllGist()
+    return !!this.getGistByFileName(filename)
+  }
+
+  async onFileChanged (path) {
+    const { filename, content } = await this.getFileDataFromPath(path)
     const gists = await this.getAllGist()
     const gist = serializeSingleFileGist(
       filename,
@@ -89,20 +102,26 @@ class GistsSync extends EventEmitter2 {
     )
     const resp = await this.api.updateGist(gist)
     if (resp.statusCode > 400) {
-      this.onError(new Error(`Unable to update gist: ${resp.body}`))
+      return this.onError(new Error(`Unable to update gist: ${resp.body}`))
     }
+    this.updateGistInCache(resp.body)
   }
 
-  async onFileAdded () {
+  async onFileAdded (path, stat) {
+    const { filename, content } = await this.getFileDataFromPath(path)
+    const hasExisting = await this.hasExisting(filename)
+    if (hasExisting) {
+      return this.onFileChanged(path, stat)
+    }
     const gist = serializeSingleFileGist(
       filename,
       content
     )
     const resp = await this.api.createGist(gist)
     if (resp.statusCode > 400) {
-      this.onError(new Error(`Unable to create gist: ${resp.body}`))
+      return this.onError(new Error(`Unable to create gist: ${resp.body}`))
     }
-    // this.api.addGist
+    this.updateGistInCache(resp.body)
   }
 
   async onFileRemoved () {
@@ -131,6 +150,23 @@ class GistsSync extends EventEmitter2 {
       this.getGistByFileName = getGistByFileName(gists)
     }
     return gists
+  }
+
+  async updateGistInCache (gist) {
+    const { setCache } = this.options
+    const cachedGists = await this.getAllGist()
+    const {login} = await this.getUser()
+    const gists = [...cachedGists]
+    const gistIndex = gists
+      .reduce((c, g, i) => g.id === gist.id ? i : c, -1)
+    if (gistIndex === -1) {
+      gists.push(gist)
+    } else {
+      gists.splice(gistIndex, 1, gist)
+    }
+    await setCache(`${login}:gists`, gists)
+    const freshGists = await this.getAllGist()
+    this.getGistByFileName = getGistByFileName(freshGists)
   }
 }
 

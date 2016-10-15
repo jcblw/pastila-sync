@@ -7,6 +7,7 @@
     "start": "electron app.js",
     "start-test": "node -r dotenv/config dist/app",
     "build": "babel src --out-dir dist",
+    "watch": "babel src --out-dir dist -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "babel": {
@@ -20,10 +21,10 @@
   "license": "ISC",
   "dependencies": {
     "auto-bind": "^0.1.0",
+    "chokidar": "^1.6.1",
     "dotenv": "^2.0.0",
     "electron-config": "^0.2.1",
     "eventemitter2": "^2.1.3",
-    "gaze": "^1.1.2",
     "got": "^6.5.0",
     "menubar": "^5.1.0"
   },

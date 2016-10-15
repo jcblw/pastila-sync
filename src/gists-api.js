@@ -1,6 +1,10 @@
 
 import got from 'got'
 const BASE_API = 'https://api.github.com'
+const gistDefaults = {
+  public: false,
+  description: 'Added via gist sync'
+}
 
 function request (
   endpoint,
@@ -8,7 +12,9 @@ function request (
 ) {
   return got[method](`${BASE_API}${endpoint}`, {
     json: true,
-    body,
+    body: body
+      ? JSON.stringify(Object.assign({}, gistDefaults, body))
+      : undefined,
     headers: {
       Authorization: `token ${token}`,
       'User-Agent': userAgent
@@ -20,9 +26,6 @@ class GistsApi {
   constructor (token, ua) {
     this.token = token
     this.userAgent = ua
-    // somehow get user?
-
-    // figure out cleaner way to write async methods
   }
 
   request (endpoint, method, body) {
@@ -34,19 +37,17 @@ class GistsApi {
   }
 
   getAllGists ({login}) {
-    // get user somehow
-    // should probably attempt to page all results
     return this.request(
       `/users/${login}/gists`,
       'get'
     )
   }
 
-  updateGist (id, content) {
+  updateGist (content) {
     return this.request(
-      `/gists/${id}`,
+      `/gists/${content.id}`,
       'patch',
-      {content}
+      content
     )
   }
 
@@ -54,7 +55,7 @@ class GistsApi {
     return this.request(
       '/gists',
       'post',
-      {content}
+      content
     )
   }
 
