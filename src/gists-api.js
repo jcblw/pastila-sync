@@ -13,7 +13,9 @@ function request (
   return got[method](`${BASE_API}${endpoint}`, {
     json: true,
     body: body
-      ? JSON.stringify(Object.assign({}, gistDefaults, body))
+      ? JSON.stringify(
+        Object.assign({}, gistDefaults, body)
+      )
       : undefined,
     headers: {
       Authorization: `token ${token}`,

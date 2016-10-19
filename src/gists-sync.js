@@ -83,7 +83,8 @@ class GistsSync extends EventEmitter2 {
 
   async getFileDataFromPath (path) {
     const filename = path.split(/\//).pop()
-    const content = readFile(path).toString('utf8') || '.'
+    const fileContent = await readFile(path)
+    const content = fileContent.toString('utf8') || '.'
     return { filename, content }
   }
 
