@@ -1,12 +1,18 @@
 
 import {ipcRenderer} from 'electron'
 import React from 'react'
-import path from 'path'
 import {render} from 'react-dom'
 import Config from 'electron-config'
 import {App} from './components/app'
+import {getConfigObject, camelCaseKeys} from './helpers'
 
+const configKeys = [
+  'gist-key',
+  'gist-directory',
+  'gist-syncing'
+]
 const config = new Config()
+const getConfigObj = getConfigObject(config.get.bind(config))
 
 const onSubmit = (e, data) => {
   Object.keys(data)
@@ -14,13 +20,11 @@ const onSubmit = (e, data) => {
       config.set(key, data[key])
     })
   // should update main process first then update
-  ipcRenderer.send('asynchronous-message', 'config:changed')
-  update({
-    onSubmit,
-    gistDirectory: config.get('gist-directory'),
-    gistKey: config.get('gist-key'),
-    gistSync: config.get('gist-syncing')
-  })
+  ipcRenderer.send('asynchronous-message', 'config:changed', camelCaseKeys(data))
+  update(Object.assign(
+    {onSubmit},
+    getConfigObj(configKeys)
+  ))
 }
 
 const update = (props) => {
@@ -30,9 +34,7 @@ const update = (props) => {
   )
 }
 
-update({
-  onSubmit,
-  gistDirectory: config.get('gist-directory'),
-  gistKey: config.get('gist-key'),
-  gistSync: config.get('gist-syncing')
-})
+update(Object.assign(
+  {onSubmit},
+  getConfigObj(configKeys)
+))

@@ -15,7 +15,7 @@ const serializeSubmit = handler => e => {
 export const Form = ({
   onSubmit,
   gistKey,
-  gistSync,
+  gistSyncing,
   gistDirectory
 }) => (
   <form onSubmit={serializeSubmit(onSubmit)}>
@@ -35,11 +35,11 @@ export const Form = ({
       />
     </div>
     <div>
-      <label htmlFor='gist-sync'>Turn on/off sync</label>
+      <label htmlFor='gist-syncing'>Turn on/off syncing</label>
       <input
-        id='gist-sync'
+        id='gist-syncing'
         type='checkbox'
-        defaultChecked={gistSync}
+        defaultChecked={gistSyncing}
       />
     </div>
     <button>Change</button>
