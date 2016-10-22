@@ -19,7 +19,7 @@ const onSubmit = (e, data) => {
     onSubmit,
     gistDirectory: config.get('gist-directory'),
     gistKey: config.get('gist-key'),
-    gistSync: config.get('gist-sync')
+    gistSync: config.get('gist-syncing')
   })
 }
 
@@ -34,5 +34,5 @@ update({
   onSubmit,
   gistDirectory: config.get('gist-directory'),
   gistKey: config.get('gist-key'),
-  gistSync: config.get('gist-sync')
+  gistSync: config.get('gist-syncing')
 })

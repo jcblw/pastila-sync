@@ -50,13 +50,13 @@ mb.on('after-create-window', () => {
 const currentConfig = {
   gistDirectory: config.get('gist-directory'),
   gistKey: config.get('gist-key'),
-  gistSync: config.get('gist-sync')
+  gistSync: config.get('gist-syncing')
 }
 ipcMain.on('asynchronous-message', (event, arg) => {
   const nextConfig = {
     gistDirectory: config.get('gist-directory'),
     gistKey: config.get('gist-key'),
-    gistSync: config.get('gist-sync')
+    gistSync: config.get('gist-syncing')
   }
 
   if (nextConfig.gistKey !== currentConfig.gistKey) {
