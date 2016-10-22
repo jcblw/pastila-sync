@@ -10,10 +10,6 @@ import {
   getGistByFileName
 } from './gist-serializer'
 
-/*
-  GistsSync - A module that stiches a watcher and api together
-*/
-
 class GistsSync extends EventEmitter2 {
   constructor (directory = '', options = {}) {
     super()
@@ -23,8 +19,6 @@ class GistsSync extends EventEmitter2 {
     this.options = options
     this.updateToken(options.applicationToken)
     this.initialize()
-    // TODO need to store last update times from api to be able to periodically poll
-    // to see if a gist is updated
   }
 
   static of (...args) { return new GistsSync(...args) }

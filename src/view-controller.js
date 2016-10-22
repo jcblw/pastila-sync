@@ -1,4 +1,5 @@
 
+import {ipcRenderer} from 'electron'
 import React from 'react'
 import path from 'path'
 import {render} from 'react-dom'
@@ -7,18 +8,18 @@ import {App} from './components/app'
 
 const config = new Config()
 
-// need to debounce this
-const onChange = (key) => (e) => {
-  const {value} = e.target
-  config.set(key, value)
-  // need to message main process
-  // to update sync settings
+const onSubmit = (e, data) => {
+  Object.keys(data)
+    .forEach(key => {
+      config.set(key, data[key])
+    })
+  // should update main process first then update
+  ipcRenderer.send('asynchronous-message', 'config:changed')
   update({
-    onChange,
-    gistDirectory: path.resolve(
-      config.get('gist-directory')
-    ),
-    gistKey: config.get('gist-key')
+    onSubmit,
+    gistDirectory: config.get('gist-directory'),
+    gistKey: config.get('gist-key'),
+    gistSync: config.get('gist-sync')
   })
 }
 
@@ -30,7 +31,8 @@ const update = (props) => {
 }
 
 update({
-  onChange,
+  onSubmit,
   gistDirectory: config.get('gist-directory'),
-  gistKey: config.get('gist-key')
+  gistKey: config.get('gist-key'),
+  gistSync: config.get('gist-sync')
 })
