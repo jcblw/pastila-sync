@@ -10,6 +10,8 @@ import {
   getGistByFileName
 } from './gist-serializer'
 
+const wrapFn = (fn1, fn2) => fn1(fn2)
+
 class GistsSync extends EventEmitter2 {
   constructor (directory = '', options = {}) {
     super()
@@ -19,6 +21,11 @@ class GistsSync extends EventEmitter2 {
     this.pollInterval = options.pollInterval
     this.options = options
     this.updateToken(options.applicationToken)
+    // can probably make abstraction for this
+    this.onFileChanged = wrapFn(this.tryFn, this.onFileChanged)
+    this.onFileAdded = wrapFn(this.tryFn, this.onFileAdded)
+    this.onFileRemoved = wrapFn(this.tryFn, this.onFileRemoved)
+    this.initialize = wrapFn(this.tryFn, this.initialize)
     this.initialize()
   }
 
@@ -36,6 +43,17 @@ class GistsSync extends EventEmitter2 {
   /*
     util methods - possibly move to helpers
   */
+
+  tryFn (asyncFn) {
+    return async (...args) => {
+      let ret
+      ret = asyncFn(...args)
+        .catch((err) => {
+          this.emit('error', err)
+        })
+      return ret
+    }
+  }
 
   getPattern (directory) {
     const dir = path.resolve(process.cwd(), directory)
@@ -124,7 +142,11 @@ class GistsSync extends EventEmitter2 {
       onError,
       onFileChanged,
       onFileAdded,
-      onFileRemoved
+      onFileRemoved,
+      // should make this more config right now just ignores
+      // dotfiles
+      ignored: (filepath) =>
+        /(^[.#]|(?:__|~)$)/.test(path.basename(filepath))
     })
   }
 

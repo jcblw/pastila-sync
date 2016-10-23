@@ -30,6 +30,10 @@ export default function start (dir) {
     )
   })
 
+  sync.on('error', (err) => {
+    console.log('error', err)
+  })
+
   process.on('unhandledRejection', (reason, p) => {
     console.log(
       'Possibly Unhandled Rejection at: Promise ',
