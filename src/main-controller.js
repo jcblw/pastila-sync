@@ -11,7 +11,10 @@ const configKeys = [
 ]
 
 export default function start (dir) {
-  const mb = menubar()
+  const mb = menubar({
+    dir,
+    icon: 'assets/active.png'
+  })
   const config = new Config()
   const getConfigObj = getConfigObject(config.get.bind(config))
   const currentConfig = getConfigObj(configKeys)

@@ -11,7 +11,6 @@ import {
   getGistByFileName
 } from './gist-serializer'
 
-
 class GistsSync extends EventEmitter2 {
   constructor (directory = '', options = {}) {
     super()
