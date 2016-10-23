@@ -16,6 +16,7 @@ class GistsSync extends EventEmitter2 {
     autoBind(this)
     this.validateOptions(options)
     this.pattern = this.getPattern(directory)
+    this.pollInterval = options.pollInterval
     this.options = options
     this.updateToken(options.applicationToken)
     this.initialize()
@@ -27,6 +28,9 @@ class GistsSync extends EventEmitter2 {
     const gists = await this.getAllGist()
     this.getGistByFileName = getGistByFileName(gists)
     this.createWatcher()
+    if (this.pollInterval) {
+      this.startPolling()
+    }
   }
 
   validateOptions ({
@@ -42,6 +46,19 @@ class GistsSync extends EventEmitter2 {
   }
 
   updateToken (token) { this.api = new GistsApi(token) }
+
+  setPollInterval (num) {
+    this.pollInterval = num
+    this.stopPolling()
+    if (this.pollInterval) {
+      this.startPolling()
+    }
+  }
+
+  setDirectory (directory) {
+    this.pattern = this.getPattern(directory)
+    this.watcher.setPattern(this.pattern)
+  }
 
   createWatcher () {
     const {
@@ -64,9 +81,19 @@ class GistsSync extends EventEmitter2 {
     return `${dir}/`
   }
 
-  setDirectory (directory) {
-    this.pattern = this.getPattern(directory)
-    this.watcher.setPattern(this.pattern)
+  async poll () {
+    await this.getAllGists()
+    this.startPolling() // keep polling
+    return Promise.resolve()
+  }
+
+  stopPolling () {
+    clearTimeout(this.pollTimeout)
+  }
+
+  startPolling () {
+    this.stopPolling()
+    this.pollTimeout(this.poll, this.pollInterval)
   }
 
   resumeWatcher () { this.watcher.resume() }
@@ -129,7 +156,7 @@ class GistsSync extends EventEmitter2 {
   }
 
   async onFileRemoved () {
-    // this.api.destroyGist?
+    // TODO: Possibly do this?
   }
 
   async getUser () {

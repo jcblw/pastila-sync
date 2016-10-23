@@ -6,13 +6,13 @@ import Config from 'electron-config'
 import {App} from './components/app'
 import {getConfigObject, camelCaseKeys} from './helpers'
 
+const config = new Config()
+const getConfigObj = getConfigObject(config.get.bind(config))
 const configKeys = [
   'gist-key',
   'gist-directory',
   'gist-syncing'
 ]
-const config = new Config()
-const getConfigObj = getConfigObject(config.get.bind(config))
 
 const onSubmit = (e, data) => {
   Object.keys(data)
