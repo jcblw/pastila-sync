@@ -75,6 +75,13 @@ class GistsSync extends EventEmitter2 {
 
   onError (err) { this.emit('error', err) }
 
+  hasFileUpdated (filename, content, existing) {
+    if (!existing) return true
+    const oldContent = existing.files[filename].content
+    if (!oldContent) return true
+    return oldContent !== content
+  }
+
   async getFileDataFromPath (path) {
     const filename = path.split(/\//).pop()
     const fileContent = await readFile(path)
@@ -88,10 +95,14 @@ class GistsSync extends EventEmitter2 {
 
   async onFileChanged (path) {
     const { filename, content } = await this.getFileDataFromPath(path)
+    const existingGist = this.getGistByFileName(filename)
+
+    if (!this.hasFileUpdated(filename, content, existingGist)) return
+
     const gist = serializeSingleFileGist(
       filename,
       content,
-      this.getGistByFileName(filename)
+      existingGist
     )
     const resp = await this.api.updateGist(gist)
     if (resp.statusCode > 400) {
