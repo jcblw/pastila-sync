@@ -2,6 +2,7 @@ import path from 'path'
 import assert from 'assert'
 import autoBind from 'auto-bind'
 import { EventEmitter2 } from 'eventemitter2'
+import asyncCatch from 'async-fn-catch'
 import { readFile } from './fs-promise'
 import GistsWatcher from './gists-watcher'
 import GistsApi from './gists-api'
@@ -10,7 +11,6 @@ import {
   getGistByFileName
 } from './gist-serializer'
 
-const wrapFn = (fn1, fn2) => fn1(fn2)
 
 class GistsSync extends EventEmitter2 {
   constructor (directory = '', options = {}) {
@@ -22,10 +22,10 @@ class GistsSync extends EventEmitter2 {
     this.options = options
     this.updateToken(options.applicationToken)
     // can probably make abstraction for this
-    this.onFileChanged = wrapFn(this.tryFn, this.onFileChanged)
-    this.onFileAdded = wrapFn(this.tryFn, this.onFileAdded)
-    this.onFileRemoved = wrapFn(this.tryFn, this.onFileRemoved)
-    this.initialize = wrapFn(this.tryFn, this.initialize)
+    this.onFileChanged = asyncCatch(this.onFileChanged, this.onError)
+    this.onFileAdded = asyncCatch(this.onFileAdded, this.onError)
+    this.onFileRemoved = asyncCatch(this.onFileRemoved, this.onError)
+    this.initialize = asyncCatch(this.initialize, this.onError)
     this.initialize()
   }
 
@@ -43,17 +43,6 @@ class GistsSync extends EventEmitter2 {
   /*
     util methods - possibly move to helpers
   */
-
-  tryFn (asyncFn) {
-    return async (...args) => {
-      let ret
-      ret = asyncFn(...args)
-        .catch((err) => {
-          this.emit('error', err)
-        })
-      return ret
-    }
-  }
 
   getPattern (directory) {
     const dir = path.resolve(process.cwd(), directory)

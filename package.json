@@ -21,6 +21,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async-fn-catch": "^0.1.0",
     "auto-bind": "^0.1.0",
     "chokidar": "^1.6.1",
     "css-modules-electron": "^1.0.0",
