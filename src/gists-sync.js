@@ -33,6 +33,54 @@ class GistsSync extends EventEmitter2 {
     }
   }
 
+  /*
+    util methods - possibly move to helpers
+  */
+
+  getPattern (directory) {
+    const dir = path.resolve(process.cwd(), directory)
+    return `${dir}/`
+  }
+
+  hasFileUpdated (filename, content, existing) {
+    if (!existing) return true
+    const oldContent = existing.files[filename].content
+    if (!oldContent) return true
+    return oldContent !== content
+  }
+
+  async getFileDataFromPath (path) {
+    const filename = path.split(/\//).pop()
+    const fileContent = await readFile(path)
+    const content = fileContent.toString('utf8') || '.'
+    return { filename, content }
+  }
+
+  async hasExisting (filename) {
+    return !!this.getGistByFileName(filename)
+  }
+
+  async updateGistInCache (gist) {
+    const { setCache } = this.options
+    const cachedGists = await this.getAllGist()
+    const {login} = await this.getUser()
+    const gists = [...cachedGists]
+    const gistIndex = gists
+      .reduce((c, g, i) => g.id === gist.id ? i : c, -1)
+    if (gistIndex === -1) {
+      gists.push(gist)
+    } else {
+      gists.splice(gistIndex, 1, gist)
+    }
+    await setCache(`${login}:gists`, gists)
+    const freshGists = await this.getAllGist()
+    this.getGistByFileName = getGistByFileName(freshGists)
+  }
+
+  /*
+    methods dealing with setting or validating optoins
+  */
+
   validateOptions ({
     setCache,
     clearCache,
@@ -60,6 +108,10 @@ class GistsSync extends EventEmitter2 {
     this.watcher.setPattern(this.pattern)
   }
 
+  /*
+    methods dealing with creating/config watcher
+  */
+
   createWatcher () {
     const {
       onError,
@@ -76,10 +128,13 @@ class GistsSync extends EventEmitter2 {
     })
   }
 
-  getPattern (directory) {
-    const dir = path.resolve(process.cwd(), directory)
-    return `${dir}/`
-  }
+  resumeWatcher () { this.watcher.resume() }
+
+  pauseWatcher () { this.watcher.pause() }
+
+  /*
+    methods dealing with polling
+  */
 
   async poll () {
     await this.getAllGists()
@@ -96,29 +151,11 @@ class GistsSync extends EventEmitter2 {
     this.pollTimeout(this.poll, this.pollInterval)
   }
 
-  resumeWatcher () { this.watcher.resume() }
-
-  pauseWatcher () { this.watcher.pause() }
+  /*
+    methods dealing with event handling of submodule
+  */
 
   onError (err) { this.emit('error', err) }
-
-  hasFileUpdated (filename, content, existing) {
-    if (!existing) return true
-    const oldContent = existing.files[filename].content
-    if (!oldContent) return true
-    return oldContent !== content
-  }
-
-  async getFileDataFromPath (path) {
-    const filename = path.split(/\//).pop()
-    const fileContent = await readFile(path)
-    const content = fileContent.toString('utf8') || '.'
-    return { filename, content }
-  }
-
-  async hasExisting (filename) {
-    return !!this.getGistByFileName(filename)
-  }
 
   async onFileChanged (path) {
     const { filename, content } = await this.getFileDataFromPath(path)
@@ -159,6 +196,10 @@ class GistsSync extends EventEmitter2 {
     // TODO: Possibly do this?
   }
 
+  /*
+    methods dealing with fetching more data
+  */
+
   async getUser () {
     const { getCache, applicationToken, setCache } = this.options
     let user = await getCache(applicationToken)
@@ -181,23 +222,6 @@ class GistsSync extends EventEmitter2 {
       this.getGistByFileName = getGistByFileName(gists)
     }
     return gists
-  }
-
-  async updateGistInCache (gist) {
-    const { setCache } = this.options
-    const cachedGists = await this.getAllGist()
-    const {login} = await this.getUser()
-    const gists = [...cachedGists]
-    const gistIndex = gists
-      .reduce((c, g, i) => g.id === gist.id ? i : c, -1)
-    if (gistIndex === -1) {
-      gists.push(gist)
-    } else {
-      gists.splice(gistIndex, 1, gist)
-    }
-    await setCache(`${login}:gists`, gists)
-    const freshGists = await this.getAllGist()
-    this.getGistByFileName = getGistByFileName(freshGists)
   }
 }
 
