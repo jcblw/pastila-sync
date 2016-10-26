@@ -11,10 +11,6 @@ const configKeys = [
 ]
 
 export default function start (dir) {
-  const mb = menubar({
-    dir,
-    icon: 'assets/active.png'
-  })
   const config = new Config()
   const getConfigObj = getConfigObject(config.get.bind(config))
   const currentConfig = getConfigObj(configKeys)
@@ -31,6 +27,12 @@ export default function start (dir) {
     getCache: (name) => Promise.resolve(
       config.get(name)
     )
+  })
+  const mb = menubar({
+    dir,
+    icon: currentConfig.gistSyncing
+      ? 'assets/active.png'
+      : 'assets/inactive.png'
   })
 
   sync.on('error', (err) => {
@@ -74,8 +76,12 @@ export default function start (dir) {
 
     if (nextConfig.gistSyncing !== currentConfig.gistSyncing) {
       const method = nextConfig.gistSyncing ? 'resumeWatcher' : 'pauseWatcher'
+      const icon = nextConfig.gistSyncing
+        ? 'assets/active.png'
+        : 'assets/inactive.png'
       config.set(toDashCase('gistSyncing'), nextConfig.gistSyncing)
       sync[method]()
+      mb.setOption('icon', icon)
     }
 
     // set config to current

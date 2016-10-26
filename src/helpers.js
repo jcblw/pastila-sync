@@ -7,7 +7,7 @@ export const toCamelCase = key => key.split('-')
   .join('')
 
 export const toDashCase = key => key.match(/([a-z]|[A-Z])[a-z]+/g)
-  .map(word => word.toLowercase())
+  .map(word => word.toLowerCase())
   .join('-')
 
 const transformObjKey = fn => obj => Object.keys(obj)
