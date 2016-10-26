@@ -1,7 +1,7 @@
 import menubar from 'menubar'
 import Config from 'electron-config'
 import {ipcMain} from 'electron'
-import GistsSync from './gists-sync'
+import GistsSync from 'gist-sync'
 import {getConfigObject, toDashCase} from './helpers'
 
 const configKeys = [
