@@ -28,6 +28,7 @@
     "dotenv": "^2.0.0",
     "electron-config": "^0.2.1",
     "eventemitter2": "^2.1.3",
+    "glamour": "^1.2.3",
     "got": "^6.5.0",
     "menubar": "^5.1.0",
     "postcss": "^5.2.4",
