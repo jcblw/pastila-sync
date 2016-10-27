@@ -23,7 +23,7 @@ const onSubmit = (e, data) => {
   ipcRenderer.send('asynchronous-message', 'config:changed', camelCaseKeys(data))
   update(Object.assign(
     {onSubmit},
-    getConfigObj(configKeys)
+    getConfigObj(configKeys, config.get('gist-key'))
   ))
 }
 
@@ -36,5 +36,5 @@ const update = (props) => {
 
 update(Object.assign(
   {onSubmit},
-  getConfigObj(configKeys)
+  getConfigObj(configKeys, config.get('gist-key'))
 ))

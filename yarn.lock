@@ -928,7 +928,7 @@ fast-levenshtein@~2.0.4:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.5.tgz#bd33145744519ab1c36c3ee9f31f08e9079b67f2"
 
-fbjs@^0.8.4:
+fbjs@^0.8.4, fbjs@^0.8.5:
   version "0.8.5"
   resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.5.tgz#f69ba8a876096cb1b9bffe4d7c1e71c19d39d008"
   dependencies:
@@ -1112,6 +1112,12 @@ gist-sync@^0.1.0:
     chokidar "^1.6.1"
     eventemitter2 "^2.1.3"
     got "^6.5.0"
+
+glamor:
+  version "2.17.12"
+  resolved "https://registry.yarnpkg.com/glamor/-/glamor-2.17.12.tgz#c747b7ceb180de15d869c8865bf2345cdf39b373"
+  dependencies:
+    fbjs "^0.8.5"
 
 glamour@^1.2.3:
   version "1.2.3"

@@ -10,10 +10,7 @@ const configKeys = [
   'gist-syncing'
 ]
 
-export default function start (dir) {
-  const config = new Config()
-  const getConfigObj = getConfigObject(config.get.bind(config))
-  const currentConfig = getConfigObj(configKeys)
+export function createSync (currentConfig, config) {
   const sync = GistsSync.of(currentConfig.gistDirectory, {
     applicationToken: currentConfig.gistKey,
     isWatching: currentConfig.gistSyncing,
@@ -28,16 +25,28 @@ export default function start (dir) {
       config.get(name)
     )
   })
+
+  sync.on('error', (err) => {
+    console.log('error', err)
+  })
+
+  return sync
+}
+
+export default function start (dir) {
+  const config = new Config()
+  const authToken = config.get('gist-key')
+  const getConfigObj = getConfigObject(config.get.bind(config), authToken)
+  const currentConfig = getConfigObj(configKeys)
   const mb = menubar({
     dir,
     icon: currentConfig.gistSyncing
       ? 'assets/active.png'
       : 'assets/inactive.png'
   })
-
-  sync.on('error', (err) => {
-    console.log('error', err)
-  })
+  let sync = currentConfig.gistKey
+    ? createSync(currentConfig, config)
+    : null
 
   process.on('unhandledRejection', (reason, p) => {
     console.log(
@@ -65,12 +74,17 @@ export default function start (dir) {
     if (eventName !== 'config:changed') return
 
     if (nextConfig.gistKey !== currentConfig.gistKey) {
+      if (!sync) {
+        sync = createSync(nextConfig, config)
+      }
       sync.updateToken(nextConfig.gistKey)
       config.set(toDashCase('gistKey'), nextConfig.gistKey)
     }
 
     if (nextConfig.gistDirectory !== currentConfig.gistDirectory) {
-      sync.setDirectory(nextConfig.gistDirectory)
+      if (sync) {
+        sync.setDirectory(nextConfig.gistDirectory)
+      }
       config.set(toDashCase('gistDirectory'), nextConfig.gistDirectory)
     }
 
@@ -80,7 +94,9 @@ export default function start (dir) {
         ? 'assets/active.png'
         : 'assets/inactive.png'
       config.set(toDashCase('gistSyncing'), nextConfig.gistSyncing)
-      sync[method]()
+      if (sync) {
+        sync[method]()
+      }
       mb.setOption('icon', icon)
     }
 

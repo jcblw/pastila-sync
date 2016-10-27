@@ -1,19 +1,22 @@
 
-import {style, merge} from 'glamor'
+import {merge} from 'glamor'
+import {getStyle} from './utils'
 
 export const fontFamily = 'helvetica, sans-serif'
 export const smallestSize = '10px'
-export const smallSize = '12px'
-export const mediumSize = '14px'
+export const smallSize = '14px'
+export const mediumSize = '16px'
 export const largeSize = '20px'
 
-const getStyle = prop => val => style({[prop]: val})
-const getWeightStyle = w => getStyle('fontWeight')
-const getSizeStyle = s => getStyle('fontSize')
+const getWeightStyle = getStyle('fontWeight')
+const getSizeStyle = getStyle('fontSize')
 
-export const weightLight = getWeightStyle('light')
-export const weightLightOblique = getWeightStyle('light oblique')
-export const weightRegular = getWeightStyle('regular')
+export const weightLight = getWeightStyle('lighter')
+export const weightLightOblique = merge(
+  getWeightStyle('lighter'),
+  {fontStyle: 'oblique'}
+)
+export const weightRegular = getWeightStyle('normal')
 export const weightBold = getWeightStyle('bold')
 
 export const fontSizeSmallest = getSizeStyle(smallestSize)

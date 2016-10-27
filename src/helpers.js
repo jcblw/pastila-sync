@@ -26,10 +26,20 @@ export const accessObjKeys = fn => obj => Object.keys(obj)
     return accum
   }, {})
 
+export const getGistFileName = gist => Object.keys(gist.files)[0]
+
 export const arrToObjKey = (arr) => arr.reduce((accum, key) => {
   accum[key] = key
   return accum
 }, {})
 
-export const getConfigObject = fn => arr =>
-  camelCaseKeys(accessObjKeys(fn)(arrToObjKey(arr)))
+export const getConfigObject = fn => (arr, authToken) => {
+  const user = authToken ? fn(authToken) : {}
+  return Object.assign(
+    camelCaseKeys(accessObjKeys(fn)(arrToObjKey(arr))),
+    {
+      user,
+      gists: fn(`${user.login}:gists`)
+    }
+  )
+}
