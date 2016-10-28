@@ -1,4 +1,6 @@
 
+import fs from 'mz/fs'
+
 export const upperCase = word =>
   `${word[0].toUpperCase()}${word.substr(1)}`
 
@@ -33,13 +35,21 @@ export const arrToObjKey = (arr) => arr.reduce((accum, key) => {
   return accum
 }, {})
 
-export const getConfigObject = fn => (arr, authToken) => {
-  const user = authToken ? fn(authToken) : {}
-  return Object.assign(
-    camelCaseKeys(accessObjKeys(fn)(arrToObjKey(arr))),
-    {
-      user,
-      gists: fn(`${user.login}:gists`)
-    }
-  )
+export const getLocalCacheFiles = async (dir) =>
+  await fs.readdir(dir)
+
+export const getConfigObject = fn => async (arr) => {
+  const configObj = camelCaseKeys(accessObjKeys(fn)(arrToObjKey(arr)))
+  const user = fn(configObj.gistKey)
+  let localFiles
+  try {
+    localFiles = await getLocalCacheFiles(configObj.gistDirectory)
+  } catch (e) {
+    localFiles = []
+  }
+  return Object.assign(configObj, {
+    user,
+    gists: fn(`${user.login}:gists`),
+    localFiles
+  })
 }

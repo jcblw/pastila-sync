@@ -1,4 +1,58 @@
 import React from 'react'
+import {style, merge} from 'glamor'
+import {barSpacing} from '../styles/list'
+import {
+  title,
+  subtitle,
+  body,
+  bodyBold
+} from '../styles/fonts'
+import {
+  mercury,
+  colorTundora,
+  colorGrey,
+  lima,
+  colorWhite
+} from '../styles/colors'
+import {
+  marginBottomMedium,
+  paddingBottomMedium,
+  paddingTopMedium,
+  paddingLeftMedium,
+  paddingRightMedium
+} from '../styles/spacing'
+
+const fullWidth = style({width: '100%'})
+const inlineBlock = style({display: 'inline-block'})
+const inputStyles = merge(
+  paddingBottomMedium,
+  paddingTopMedium,
+  paddingLeftMedium,
+  paddingRightMedium,
+  marginBottomMedium,
+  subtitle,
+  colorTundora,
+  style({
+    display: 'block',
+    borderRadius: '4px',
+    border: `1px solid ${mercury}`
+  })
+)
+const buttonStyles = merge(
+  paddingBottomMedium,
+  paddingTopMedium,
+  paddingLeftMedium,
+  paddingRightMedium,
+  marginBottomMedium,
+  subtitle,
+  colorWhite,
+  style({
+    backgroundColor: lima,
+    display: 'inline-block',
+    borderRadius: '4px',
+    border: 'none'
+  })
+)
 
 const serializeSubmit = handler => e => {
   e.preventDefault()
@@ -18,30 +72,47 @@ export const Form = ({
   gistSyncing,
   gistDirectory
 }) => (
-  <form onSubmit={serializeSubmit(onSubmit)}>
-    <div>
-      <label htmlFor='gist-key'>Personal Access Key</label>
+  <form onSubmit={serializeSubmit(onSubmit)} {...barSpacing}>
+    <div {...fullWidth}>
+      <label
+        {...title}
+        {...inlineBlock}
+        {...marginBottomMedium}
+        {...colorTundora}
+        htmlFor='gist-key'
+      >
+        Personal Access Key
+      </label>
       <input
+        {...inputStyles}
+        {...colorTundora}
         id='gist-key'
         defaultValue={gistKey}
       />
     </div>
-    <div>
-      <label htmlFor='gist-directory'>Directory to sync</label>
-      <small>Example: <code>/Users/foo/gists</code></small>
+    <div {...fullWidth}>
+      <label
+        {...title}
+        {...inlineBlock}
+        {...marginBottomMedium}
+        {...colorTundora}
+        htmlFor='gist-directory'
+      >
+        Directory to sync
+      </label>
+      <p
+        {...body}
+        {...marginBottomMedium}
+        {...colorGrey}
+      >
+        Example: <code {...bodyBold}>/Users/foo/gists</code>
+      </p>
       <input
+        {...inputStyles}
         id='gist-directory'
         defaultValue={gistDirectory}
       />
     </div>
-    <div>
-      <label htmlFor='gist-syncing'>Turn on/off syncing</label>
-      <input
-        id='gist-syncing'
-        type='checkbox'
-        defaultChecked={gistSyncing}
-      />
-    </div>
-    <button>Change</button>
+    <button {...buttonStyles}>Update</button>
   </form>
 )

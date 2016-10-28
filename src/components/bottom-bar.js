@@ -7,6 +7,11 @@ export default ({
   gistSyncing
 }) => (
   <div>
-    <h5 {...title} {...colorTundora}>Syncing is {gistSyncing ? 'on' : 'off'}</h5>
+    <h5
+      {...title}
+      {...colorTundora}
+    >
+      Syncing is {gistSyncing ? 'on' : 'off'}
+    </h5>
   </div>
 )

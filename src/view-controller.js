@@ -4,7 +4,10 @@ import React from 'react'
 import {render} from 'react-dom'
 import Config from 'electron-config'
 import {App} from './components/app'
-import {getConfigObject, camelCaseKeys} from './helpers'
+import {
+  getConfigObject,
+  camelCaseKeys
+} from './helpers'
 
 const config = new Config()
 const getConfigObj = getConfigObject(config.get.bind(config))
@@ -13,6 +16,7 @@ const configKeys = [
   'gist-directory',
   'gist-syncing'
 ]
+let gistCurrentView = 'gists'
 
 const onSubmit = (e, data) => {
   Object.keys(data)
@@ -21,20 +25,32 @@ const onSubmit = (e, data) => {
     })
   // should update main process first then update
   ipcRenderer.send('asynchronous-message', 'config:changed', camelCaseKeys(data))
-  update(Object.assign(
-    {onSubmit},
-    getConfigObj(configKeys, config.get('gist-key'))
-  ))
+  update()
 }
 
-const update = (props) => {
+const changeView = (view) => {
+  console.log(`changing view to ${view}`)
+  gistCurrentView = view
+  update()
+}
+
+const update = async () => {
+  // possibly pass this from somewhere to make function pure
+  const props = Object.assign(
+    {onSubmit, gistCurrentView, changeView},
+    await getConfigObj(configKeys, config.get('gist-key'))
+  )
+  if (
+    !props.gistKey ||
+    !props.gistDirectory
+  ) {
+    props.gistCurrentView = 'settings' // lock view
+  }
+
   render(
     <App {...props} />,
     document.getElementById('app')
   )
 }
 
-update(Object.assign(
-  {onSubmit},
-  getConfigObj(configKeys, config.get('gist-key'))
-))
+update()

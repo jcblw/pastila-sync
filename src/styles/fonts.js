@@ -3,7 +3,7 @@ import {merge} from 'glamor'
 import {getStyle} from './utils'
 
 export const fontFamily = 'helvetica, sans-serif'
-export const smallestSize = '10px'
+export const smallestSize = '12px'
 export const smallSize = '14px'
 export const mediumSize = '16px'
 export const largeSize = '20px'
