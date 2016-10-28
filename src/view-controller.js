@@ -28,15 +28,22 @@ const onSubmit = (e, data) => {
   update()
 }
 
-const changeView = (view) => {
+const changeView = view => {
   gistCurrentView = view
   update()
+}
+
+const downloadGist = gist => {
+  console.log(gist, 'downloadGist')
+  if (gist && gist.id) {
+    ipcRenderer.send('asynchronous-message', 'downloadFile', gist)
+  }
 }
 
 const update = async () => {
   // possibly pass this from somewhere to make function pure
   const props = Object.assign(
-    {onSubmit, gistCurrentView, changeView},
+    {onSubmit, gistCurrentView, changeView, downloadGist},
     await getConfigObj(configKeys, config.get('gist-key'))
   )
   if (

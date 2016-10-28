@@ -28,12 +28,21 @@ export const CircleStatus = ({isActive = false, size = '12px'}) => {
   )
 }
 
-export const GistItem = ({localFiles, fileName}) => {
+export const GistItem = ({
+  localFiles,
+  fileName,
+  gist,
+  downloadGist
+}) => {
   const isActive = localFiles.indexOf(fileName) !== -1
   return (
     <div {...listSpacing} {...displayFlex}>
       <div {...subtitle} {...colorGrey} {...flex[1]}>{fileName}</div>
       <div {...flex[0]}>
+        {isActive
+          ? null
+          : <button onClick={() => downloadGist(gist)}>download</button>
+        }
         <CircleStatus isActive={isActive} />
       </div>
     </div>
@@ -43,13 +52,20 @@ export const GistItem = ({localFiles, fileName}) => {
 export const GistList = ({
   user,
   gists,
-  localFiles
+  localFiles,
+  downloadGist
 }) => (
   <div>
     {gists
-      .map(gist => getGistFileName(gist))
-      .filter(x => x)
-      .map(fileName => (<GistItem fileName={fileName} localFiles={localFiles} />))
+      .map(gist => ({gist, fileName: getGistFileName(gist)}))
+      .filter(g => g.fileName)
+      .map(g => (
+        <GistItem
+          {...g}
+          downloadGist={downloadGist}
+          localFiles={localFiles}
+        />
+      ))
     }
   </div>
 )

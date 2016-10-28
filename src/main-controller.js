@@ -2,14 +2,13 @@ import menubar from 'menubar'
 import Config from 'electron-config'
 import {ipcMain} from 'electron'
 import GistsSync from 'gist-sync'
-import {getConfigObject, toDashCase} from './helpers'
+import {getConfigObject, toDashCase, isDiffAndPresent} from './helpers'
 
 const configKeys = [
   'gist-key',
   'gist-directory',
   'gist-syncing'
 ]
-const isDiffAndPresent = (val1, val2) => val1 && val1 !== val2
 
 export function createSync (currentConfig, config) {
   const sync = GistsSync.of(currentConfig.gistDirectory, {
@@ -67,41 +66,51 @@ export default async function start (dir) {
     }
   })
 
+  const publicMethods = {
+    downloadFile (gist) {
+      if (!sync) return
+      sync.downloadFile(gist)
+    },
+    'config:changed' (nextConfig) {
+      if (isDiffAndPresent(nextConfig.gistKey, currentConfig.gistKey)) {
+        if (!sync) {
+          sync = createSync(nextConfig, config)
+        }
+        sync.updateToken(nextConfig.gistKey)
+        config.set(toDashCase('gistKey'), nextConfig.gistKey)
+      }
+
+      if (isDiffAndPresent(nextConfig.gistDirectory, currentConfig.gistDirectory)) {
+        if (sync) {
+          sync.setDirectory(nextConfig.gistDirectory)
+        }
+        config.set(toDashCase('gistDirectory'), nextConfig.gistDirectory)
+      }
+
+      if (isDiffAndPresent(nextConfig.gistSyncing, currentConfig.gistSyncing)) {
+        const method = nextConfig.gistSyncing ? 'resumeWatcher' : 'pauseWatcher'
+        const icon = nextConfig.gistSyncing
+          ? 'assets/active.png'
+          : 'assets/inactive.png'
+        config.set(toDashCase('gistSyncing'), nextConfig.gistSyncing)
+        if (sync) {
+          sync[method]()
+        }
+        mb.setOption('icon', icon)
+      }
+
+      // set config to current
+      Object.assign(currentConfig, nextConfig)
+    }
+  }
+
   mb.on('after-create-window', () => {
     mb.window.loadURL(`file://${dir}/index.html`)
   })
 
-  ipcMain.on('asynchronous-message', (event, eventName, nextConfig) => {
-    if (eventName !== 'config:changed') return
-
-    if (isDiffAndPresent(nextConfig.gistKey, currentConfig.gistKey)) {
-      if (!sync) {
-        sync = createSync(nextConfig, config)
-      }
-      sync.updateToken(nextConfig.gistKey)
-      config.set(toDashCase('gistKey'), nextConfig.gistKey)
+  ipcMain.on('asynchronous-message', (event, eventName, ...args) => {
+    if (typeof publicMethods[eventName] === 'function') {
+      return publicMethods[eventName](...args)
     }
-
-    if (isDiffAndPresent(nextConfig.gistDirectory, currentConfig.gistDirectory)) {
-      if (sync) {
-        sync.setDirectory(nextConfig.gistDirectory)
-      }
-      config.set(toDashCase('gistDirectory'), nextConfig.gistDirectory)
-    }
-
-    if (isDiffAndPresent(nextConfig.gistSyncing, currentConfig.gistSyncing)) {
-      const method = nextConfig.gistSyncing ? 'resumeWatcher' : 'pauseWatcher'
-      const icon = nextConfig.gistSyncing
-        ? 'assets/active.png'
-        : 'assets/inactive.png'
-      config.set(toDashCase('gistSyncing'), nextConfig.gistSyncing)
-      if (sync) {
-        sync[method]()
-      }
-      mb.setOption('icon', icon)
-    }
-
-    // set config to current
-    Object.assign(currentConfig, nextConfig)
   })
 }

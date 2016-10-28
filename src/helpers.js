@@ -38,6 +38,8 @@ export const arrToObjKey = (arr) => arr.reduce((accum, key) => {
 export const getLocalCacheFiles = async (dir) =>
   await fs.readdir(dir)
 
+export const isDiffAndPresent = (val1, val2) => val1 && val1 !== val2
+
 export const getConfigObject = fn => async (arr) => {
   const configObj = camelCaseKeys(accessObjKeys(fn)(arrToObjKey(arr)))
   const user = fn(configObj.gistKey)
