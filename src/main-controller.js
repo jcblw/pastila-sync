@@ -9,6 +9,7 @@ const configKeys = [
   'gist-directory',
   'gist-syncing'
 ]
+const isDiffAndPresent = (val1, val2) => val1 && val1 !== val2
 
 export function createSync (currentConfig, config) {
   const sync = GistsSync.of(currentConfig.gistDirectory, {
@@ -33,11 +34,11 @@ export function createSync (currentConfig, config) {
   return sync
 }
 
-export default function start (dir) {
+export default async function start (dir) {
   const config = new Config()
   const authToken = config.get('gist-key')
   const getConfigObj = getConfigObject(config.get.bind(config), authToken)
-  const currentConfig = getConfigObj(configKeys)
+  const currentConfig = await getConfigObj(configKeys)
   const mb = menubar({
     dir,
     icon: currentConfig.gistSyncing
@@ -73,7 +74,7 @@ export default function start (dir) {
   ipcMain.on('asynchronous-message', (event, eventName, nextConfig) => {
     if (eventName !== 'config:changed') return
 
-    if (nextConfig.gistKey !== currentConfig.gistKey) {
+    if (isDiffAndPresent(nextConfig.gistKey, currentConfig.gistKey)) {
       if (!sync) {
         sync = createSync(nextConfig, config)
       }
@@ -81,14 +82,14 @@ export default function start (dir) {
       config.set(toDashCase('gistKey'), nextConfig.gistKey)
     }
 
-    if (nextConfig.gistDirectory !== currentConfig.gistDirectory) {
+    if (isDiffAndPresent(nextConfig.gistDirectory, currentConfig.gistDirectory)) {
       if (sync) {
         sync.setDirectory(nextConfig.gistDirectory)
       }
       config.set(toDashCase('gistDirectory'), nextConfig.gistDirectory)
     }
 
-    if (nextConfig.gistSyncing !== currentConfig.gistSyncing) {
+    if (isDiffAndPresent(nextConfig.gistSyncing, currentConfig.gistSyncing)) {
       const method = nextConfig.gistSyncing ? 'resumeWatcher' : 'pauseWatcher'
       const icon = nextConfig.gistSyncing
         ? 'assets/active.png'
