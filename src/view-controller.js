@@ -29,7 +29,6 @@ const onSubmit = (e, data) => {
 }
 
 const changeView = (view) => {
-  console.log(`changing view to ${view}`)
   gistCurrentView = view
   update()
 }
