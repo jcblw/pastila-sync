@@ -55,4 +55,10 @@ Once you fill out those pieces of info click update and it should update your us
 
 ### Contributing
 
+You will need to run build before each restart, and right now thing don't hot reload :(
+
+```shell
+npm run build # or watch to watch files
+```
+
 Plz do, I look forward to them :D. Also run `npm test` to run the linter.
