@@ -1,5 +1,5 @@
 
-import {ipcRenderer} from 'electron'
+import {ipcRenderer, clipboard} from 'electron'
 import {bindActionCreators} from 'redux'
 import React from 'react'
 import {render} from 'react-dom'
@@ -44,10 +44,20 @@ const openFile = gist => {
   }
 }
 
+const openInBrowser = gist => {
+  if (gist && gist.html_url) {
+    ipcRenderer.send('asynchronous-message', 'openInBrowser', gist)
+  }
+}
+
+const copyLink = gist => {
+  clipboard.writeText(gist.html_url)
+}
+
 const update = async () => {
   // possibly pass this from somewhere to make function pure
   const props = Object.assign(
-    {onSubmit, downloadGist, openFile},
+    {onSubmit, downloadGist, openFile, copyLink, openInBrowser},
     bindActionCreators(actions, store.dispatch),
     store.getState(),
     await getConfigObj(configKeys, config.get('gist-key'))

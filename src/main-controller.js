@@ -86,6 +86,9 @@ export default async function start (dir) {
       )
       open(filePath)
     },
+    openInBrowser ({html_url: htmlUrl}) {
+      open(htmlUrl)
+    },
     'config:changed' (nextConfig) {
       if (isDiffAndPresent(nextConfig.gistKey, currentConfig.gistKey)) {
         if (!sync && (currentConfig.gistDirectory || nextConfig.gistDirectory)) {

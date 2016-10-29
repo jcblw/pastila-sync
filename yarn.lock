@@ -121,7 +121,7 @@ async-each@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/async-each/-/async-each-1.0.1.tgz#19d386a1d9edc6e7c1c85d388aedbcc56d33602d"
 
-async-fn-catch, async-fn-catch@^0.1.0:
+async-fn-catch@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/async-fn-catch/-/async-fn-catch-0.1.0.tgz#2bfeabe20550fe3b939257c4146ab582869af2bd"
 
@@ -1002,7 +1002,7 @@ for-in@^0.1.5:
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-0.1.6.tgz#c9f96e89bfad18a545af5ec3ed352a1d9e5b4dc8"
 
-for-own@^0.1.3:
+for-own@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/for-own/-/for-own-0.1.4.tgz#0149b41a39088c7515f51ebe1c1386d45f935072"
   dependencies:
@@ -1107,9 +1107,9 @@ getpass@^0.1.1:
   dependencies:
     assert-plus "^1.0.0"
 
-gist-sync@^0.1.0:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/gist-sync/-/gist-sync-0.1.1.tgz#40250b94cb0bc57a8af63c8919cedfa094d51289"
+gist-sync@^0.2.0:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/gist-sync/-/gist-sync-0.2.2.tgz#e237c710dc3aa8d6b4416c27f43526a3bcdbf82b"
   dependencies:
     async-fn-catch "^0.1.0"
     auto-bind "^0.1.0"
@@ -1117,9 +1117,9 @@ gist-sync@^0.1.0:
     eventemitter2 "^2.1.3"
     got "^6.5.0"
 
-glamor:
-  version "2.17.12"
-  resolved "https://registry.yarnpkg.com/glamor/-/glamor-2.17.12.tgz#c747b7ceb180de15d869c8865bf2345cdf39b373"
+glamor@^2.17.12:
+  version "2.17.14"
+  resolved "https://registry.yarnpkg.com/glamor/-/glamor-2.17.14.tgz#5ffedc85e4bcc2421d7e286f9d0c32b5f73c721b"
   dependencies:
     fbjs "^0.8.5"
 
@@ -1496,10 +1496,6 @@ jodid25519@^1.0.0:
   dependencies:
     jsbn "~0.1.0"
 
-js-tokens@^1.0.1:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-1.0.3.tgz#14e56eb68c8f1a92c43d59f5014ec29dc20f2ae1"
-
 js-tokens@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-2.0.0.tgz#79903f5563ee778cc1162e6dcf1a0027c97f9cb5"
@@ -1560,8 +1556,8 @@ jsprim@^1.2.2:
     verror "1.3.6"
 
 jsx-ast-utils@^1.3.1:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/jsx-ast-utils/-/jsx-ast-utils-1.3.2.tgz#dff658782705352111f9865d40471bc4a955961e"
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/jsx-ast-utils/-/jsx-ast-utils-1.3.3.tgz#ccfdbe0320ba03f7a1fc4e67ceaf7e2cc0169721"
   dependencies:
     acorn-jsx "^3.0.1"
     object-assign "^4.1.0"
@@ -1604,10 +1600,10 @@ lodash@^4.0.0, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.16.4.tgz#01ce306b9bad1319f2a5528674f88297aeb70127"
 
 loose-envify@^1.0.0, loose-envify@^1.1.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.2.0.tgz#69a65aad3de542cf4ee0f4fe74e8e33c709ccb0f"
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.3.0.tgz#6b26248c42f6d4fa4b0d8542f78edfcde35642a8"
   dependencies:
-    js-tokens "^1.0.1"
+    js-tokens "^2.0.0"
 
 loud-rejection@^1.0.0:
   version "1.6.0"
@@ -1714,7 +1710,7 @@ mute-stream@0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.5.tgz#8fbfabb0a98a253d3184331f9e8deb7372fac6c0"
 
-mz:
+mz@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/mz/-/mz-2.4.0.tgz#987ba9624d89395388c37cb4741e2caf4dd13b1a"
   dependencies:
@@ -1816,10 +1812,10 @@ object-keys@~0.4.0:
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-0.4.0.tgz#28a6aae7428dd2c3a92f3d95f21335dd204e0336"
 
 object.omit@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/object.omit/-/object.omit-2.0.0.tgz#868597333d54e60662940bb458605dd6ae12fe94"
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/object.omit/-/object.omit-2.0.1.tgz#1a9c744829f39dbb858c76ca3579ae2a54ebd1fa"
   dependencies:
-    for-own "^0.1.3"
+    for-own "^0.1.4"
     is-extendable "^0.1.1"
 
 once@^1.3.0:
@@ -1838,7 +1834,7 @@ onetime@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/onetime/-/onetime-1.1.0.tgz#a1f7838f8314c516f05ecefcbc4ccfe04b4ed789"
 
-open:
+open@^0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/open/-/open-0.0.5.tgz#42c3e18ec95466b6bf0dc42f3a2945c3f0cad8fc"
 
@@ -2093,7 +2089,7 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux:
+redux@^3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/redux/-/redux-3.6.0.tgz#887c2b3d0b9bd86eca2be70571c27654c19e188d"
   dependencies:
@@ -2446,8 +2442,8 @@ trim-newlines@^1.0.0:
   resolved "https://registry.yarnpkg.com/trim-newlines/-/trim-newlines-1.0.0.tgz#5887966bb582a4503a41eb524f7d35011815a613"
 
 tryit@^1.0.1:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/tryit/-/tryit-1.0.2.tgz#c196b0073e6b1c595d93c9c830855b7acc32a453"
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/tryit/-/tryit-1.0.3.tgz#393be730a9446fd1ead6da59a014308f36c289cb"
 
 tunnel-agent@~0.4.1:
   version "0.4.3"

@@ -1,14 +1,15 @@
 
 import React from 'react'
-import {style, merge} from 'glamor'
+import {merge} from 'glamor'
 import {decorateGistObj, sortByKeyPresence} from '../helpers'
-import {marginRightSmall} from '../styles/spacing'
+import {marginRightMedium} from '../styles/spacing'
 import {listSpacing} from '../styles/list'
 import {subtitle, body} from '../styles/fonts'
+import {Download, Edit, Copy, Browser} from './icons'
 import {
   colorGrey,
   lima,
-  mercury
+  grey
 } from '../styles/colors'
 import {
   flex,
@@ -16,55 +17,38 @@ import {
   alignItems
 } from '../styles/flex'
 
-const activeCircle = style({backgroundColor: lima})
-const inactiveCircle = style({backgroundColor: mercury})
-
-export const CircleStatus = ({
-  isActive = false,
-  size = '12px',
-  className = ''
-}) => {
-  const circle = style({
-    borderRadius: '50%',
-    width: size,
-    height: size
-  })
-  return (
-    <div
-      {...circle}
-      {...(isActive ? activeCircle : inactiveCircle)}
-    />
-  )
-}
-
 export const GistItem = (gist) => {
   const {
     fileName,
     downloadGist,
     isDownloading,
     isActive,
-    openFile
+    openFile,
+    copyLink,
+    openInBrowser
   } = gist
   const downloadText = merge(
     flex[0],
     body,
-    colorGrey,
-    marginRightSmall
+    colorGrey
   )
   return (
     <div {...listSpacing} {...displayFlex}>
-      <div {...subtitle} {...colorGrey} {...flex[1]}>{fileName}</div>
+      <div {...subtitle} {...colorGrey} {...flex[1]} {...alignItems.center}>{fileName}</div>
       <div {...flex[0]} {...displayFlex} {...alignItems.center}>
         <div {...downloadText}>
           {isActive
-            ? <span onClick={() => openFile(gist)}>open</span>
+            ? (
+              <div {...displayFlex}>
+                <Browser color={grey} onClick={() => openInBrowser(gist)} className={marginRightMedium} />
+                <Copy color={grey} onClick={() => copyLink(gist)} className={marginRightMedium} />
+                <Edit color={grey} onClick={() => openFile(gist)} />
+              </div>
+            )
             : isDownloading
-              ? 'downloading...'
-              : <span onClick={() => downloadGist(gist)}>download</span>
+              ? <Download color={lima} />
+              : <Download color={grey} onClick={() => downloadGist(gist)} />
           }
-        </div>
-        <div {...flex[0]}>
-          <CircleStatus isActive={isActive} />
         </div>
       </div>
     </div>
@@ -77,7 +61,9 @@ export const GistList = ({
   localFiles,
   downloadGist,
   openFile,
-  isDownloading
+  isDownloading,
+  copyLink,
+  openInBrowser
 }) => (
   <div>
     {gists
@@ -89,6 +75,8 @@ export const GistList = ({
           {...gist}
           downloadGist={downloadGist}
           openFile={openFile}
+          copyLink={copyLink}
+          openInBrowser={openInBrowser}
         />
       ))
     }
