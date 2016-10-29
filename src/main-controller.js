@@ -35,6 +35,15 @@ export function createSync (currentConfig, config) {
   return sync
 }
 
+process.on('unhandledRejection', (reason, p) => {
+  console.log(
+    'Possibly Unhandled Rejection at: Promise ',
+    p,
+    ' reason: ',
+    reason
+  )
+})
+
 export default async function start (dir) {
   const config = new Config()
   const authToken = config.get('gist-key')
@@ -46,18 +55,9 @@ export default async function start (dir) {
       ? 'assets/active.png'
       : 'assets/inactive.png'
   })
-  let sync = currentConfig.gistKey
+  let sync = currentConfig.gistKey && currentConfig.gistDirectory
     ? createSync(currentConfig, config)
     : null
-
-  process.on('unhandledRejection', (reason, p) => {
-    console.log(
-      'Possibly Unhandled Rejection at: Promise ',
-      p,
-      ' reason: ',
-      reason
-    )
-  })
 
   mb.on('ready', () => {
     if (
@@ -88,7 +88,7 @@ export default async function start (dir) {
     },
     'config:changed' (nextConfig) {
       if (isDiffAndPresent(nextConfig.gistKey, currentConfig.gistKey)) {
-        if (!sync) {
+        if (!sync && (currentConfig.gistDirectory || nextConfig.gistDirectory)) {
           sync = createSync(nextConfig, config)
         }
         sync.updateToken(nextConfig.gistKey)
@@ -96,6 +96,9 @@ export default async function start (dir) {
       }
 
       if (isDiffAndPresent(nextConfig.gistDirectory, currentConfig.gistDirectory)) {
+        if (!sync && (currentConfig.gistKey || nextConfig.gistKey)) {
+          sync = createSync(nextConfig, config)
+        }
         if (sync) {
           sync.setDirectory(nextConfig.gistDirectory)
         }

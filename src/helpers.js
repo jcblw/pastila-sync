@@ -66,7 +66,7 @@ export const getConfigObject = fn => async (arr) => {
   }
   return Object.assign(configObj, {
     user,
-    gists: fn(`${user.login}:gists`),
+    gists: fn(`${user ? user.login : ''}:gists`),
     localFiles
   })
 }
