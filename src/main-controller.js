@@ -67,9 +67,13 @@ export default async function start (dir) {
   })
 
   const publicMethods = {
-    downloadFile (gist) {
+    async downloadFile (gist, reply) {
       if (!sync) return
-      sync.downloadFile(gist)
+      await sync.downloadFile(gist)
+      reply({
+        type: 'DOWNLOAD_FILE_COMPLETED',
+        gist
+      })
     },
     'config:changed' (nextConfig) {
       if (isDiffAndPresent(nextConfig.gistKey, currentConfig.gistKey)) {
@@ -110,7 +114,10 @@ export default async function start (dir) {
 
   ipcMain.on('asynchronous-message', (event, eventName, ...args) => {
     if (typeof publicMethods[eventName] === 'function') {
-      return publicMethods[eventName](...args)
+      return publicMethods[eventName](
+        ...args,
+        event.sender.send.bind(event.sender, 'asynchronous-reply')
+      )
     }
   })
 }

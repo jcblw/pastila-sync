@@ -1,9 +1,12 @@
 
 import {ipcRenderer} from 'electron'
+import {bindActionCreators} from 'redux'
 import React from 'react'
 import {render} from 'react-dom'
 import Config from 'electron-config'
 import {App} from './components/app'
+import * as actions from './actions'
+import configStore from './store'
 import {
   getConfigObject,
   camelCaseKeys
@@ -16,7 +19,7 @@ const configKeys = [
   'gist-directory',
   'gist-syncing'
 ]
-let gistCurrentView = 'gists'
+const store = configStore()
 
 const onSubmit = (e, data) => {
   Object.keys(data)
@@ -28,14 +31,9 @@ const onSubmit = (e, data) => {
   update()
 }
 
-const changeView = view => {
-  gistCurrentView = view
-  update()
-}
-
 const downloadGist = gist => {
-  console.log(gist, 'downloadGist')
   if (gist && gist.id) {
+    store.dispatch(actions.download(gist))
     ipcRenderer.send('asynchronous-message', 'downloadFile', gist)
   }
 }
@@ -43,7 +41,9 @@ const downloadGist = gist => {
 const update = async () => {
   // possibly pass this from somewhere to make function pure
   const props = Object.assign(
-    {onSubmit, gistCurrentView, changeView, downloadGist},
+    {onSubmit, downloadGist},
+    bindActionCreators(actions, store.dispatch),
+    store.getState(),
     await getConfigObj(configKeys, config.get('gist-key'))
   )
   if (
@@ -60,3 +60,8 @@ const update = async () => {
 }
 
 update()
+store.subscribe(update)
+ipcRenderer.on('asynchronous-reply', (action) => {
+  if (action && action.type) return store.dispatch(action)
+  update()
+})
