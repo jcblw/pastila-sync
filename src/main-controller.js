@@ -1,7 +1,9 @@
 import menubar from 'menubar'
+import path from 'path'
 import Config from 'electron-config'
 import {ipcMain} from 'electron'
 import GistsSync from 'gist-sync'
+import open from 'open'
 import {getConfigObject, toDashCase, isDiffAndPresent} from './helpers'
 
 const configKeys = [
@@ -74,6 +76,15 @@ export default async function start (dir) {
         type: 'DOWNLOAD_FILE_COMPLETED',
         gist
       })
+    },
+    openFile ({fileName}) {
+      const directory = config.get('gist-directory')
+      const filePath = path.resolve(
+        process.cwd(),
+        directory,
+        fileName
+      )
+      open(filePath)
     },
     'config:changed' (nextConfig) {
       if (isDiffAndPresent(nextConfig.gistKey, currentConfig.gistKey)) {

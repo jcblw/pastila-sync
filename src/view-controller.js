@@ -38,10 +38,16 @@ const downloadGist = gist => {
   }
 }
 
+const openFile = gist => {
+  if (gist && gist.fileName) {
+    ipcRenderer.send('asynchronous-message', 'openFile', gist)
+  }
+}
+
 const update = async () => {
   // possibly pass this from somewhere to make function pure
   const props = Object.assign(
-    {onSubmit, downloadGist},
+    {onSubmit, downloadGist, openFile},
     bindActionCreators(actions, store.dispatch),
     store.getState(),
     await getConfigObj(configKeys, config.get('gist-key'))

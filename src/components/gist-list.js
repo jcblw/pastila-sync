@@ -42,7 +42,8 @@ export const GistItem = (gist) => {
     fileName,
     downloadGist,
     isDownloading,
-    isActive
+    isActive,
+    openFile
   } = gist
   const downloadText = merge(
     flex[0],
@@ -56,7 +57,7 @@ export const GistItem = (gist) => {
       <div {...flex[0]} {...displayFlex} {...alignItems.center}>
         <div {...downloadText}>
           {isActive
-            ? null
+            ? <span onClick={() => openFile(gist)}>open</span>
             : isDownloading
               ? 'downloading...'
               : <span onClick={() => downloadGist(gist)}>download</span>
@@ -75,6 +76,7 @@ export const GistList = ({
   gists,
   localFiles,
   downloadGist,
+  openFile,
   isDownloading
 }) => (
   <div>
@@ -86,6 +88,7 @@ export const GistList = ({
         <GistItem
           {...gist}
           downloadGist={downloadGist}
+          openFile={openFile}
         />
       ))
     }
