@@ -12,6 +12,7 @@ This is a small menubar app that acts like dropbox sync but with gist files. Its
 git clone https://github.com/jcblw/pastila-sync.git
 cd pastila-sync
 npm install
+npm run build
 ```
 
 This gets you 90% setup. Now you can start the application.
