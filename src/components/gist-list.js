@@ -1,7 +1,7 @@
 
 import React from 'react'
 import {style, merge} from 'glamor'
-import {getGistFileName} from '../helpers'
+import {decorateGistObj, sortByKeyPresence} from '../helpers'
 import {marginRightSmall} from '../styles/spacing'
 import {listSpacing} from '../styles/list'
 import {subtitle, body} from '../styles/fonts'
@@ -37,14 +37,13 @@ export const CircleStatus = ({
   )
 }
 
-export const GistItem = ({
-  localFiles,
-  fileName,
-  gist,
-  downloadGist,
-  isDownloading
-}) => {
-  const isActive = localFiles.indexOf(fileName) !== -1
+export const GistItem = (gist) => {
+  const {
+    fileName,
+    downloadGist,
+    isDownloading,
+    isActive
+  } = gist
   const downloadText = merge(
     flex[0],
     body,
@@ -80,14 +79,13 @@ export const GistList = ({
 }) => (
   <div>
     {gists
-      .map(gist => ({gist, fileName: getGistFileName(gist)}))
-      .filter(g => g.fileName)
-      .map(g => (
+      .map(decorateGistObj({localFiles, isDownloading}))
+      .filter(gist => gist.fileName)
+      .sort(sortByKeyPresence('isActive'))
+      .map(gist => (
         <GistItem
-          {...g}
-          isDownloading={g.gist.id === isDownloading}
+          {...gist}
           downloadGist={downloadGist}
-          localFiles={localFiles}
         />
       ))
     }
