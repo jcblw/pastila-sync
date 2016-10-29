@@ -8,6 +8,16 @@ export const gistCurrentView = (state = 'gists', action) => {
   return state
 }
 
+export const isDownloading = (state = null, action) => {
+  if (action.type === 'FILE_IS_DOWNLOADING') {
+    return action.gist.id
+  }
+  if (action.type === 'DOWNLOAD_FILE_COMPLETED') {
+    return null
+  }
+  return state
+}
+
 export const promiseMiddleware = ({dispatch}) => {
   return next => async action => {
     if (action && typeof action.then === 'function') {
@@ -21,7 +31,10 @@ export const promiseMiddleware = ({dispatch}) => {
 
 export default (payload = {}) => {
   return createStore(
-    combineReducers({gistCurrentView}),
+    combineReducers({
+      gistCurrentView,
+      isDownloading
+    }),
     payload,
     applyMiddleware(promiseMiddleware)
   )

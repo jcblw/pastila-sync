@@ -46,6 +46,8 @@ const update = async () => {
     store.getState(),
     await getConfigObj(configKeys, config.get('gist-key'))
   )
+
+  console.log(store.getState())
   if (
     !props.gistKey ||
     !props.gistDirectory

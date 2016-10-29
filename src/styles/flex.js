@@ -13,3 +13,11 @@ export const flexGrow = [0, 1]
 
 export const flexShrink = [0, 1]
   .map(num => style({flexShrink: num}))
+
+export const justifyContent = {
+  center: style({justifyContent: 'center'})
+}
+
+export const alignItems = {
+  center: style({alignItems: 'center'})
+}

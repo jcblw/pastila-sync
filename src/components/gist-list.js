@@ -1,20 +1,29 @@
 
 import React from 'react'
-import {style} from 'glamor'
+import {style, merge} from 'glamor'
 import {getGistFileName} from '../helpers'
+import {marginRightSmall} from '../styles/spacing'
 import {listSpacing} from '../styles/list'
-import {subtitle} from '../styles/fonts'
+import {subtitle, body} from '../styles/fonts'
 import {
   colorGrey,
   lima,
   mercury
 } from '../styles/colors'
-import {flex, displayFlex} from '../styles/flex'
+import {
+  flex,
+  displayFlex,
+  alignItems
+} from '../styles/flex'
 
 const activeCircle = style({backgroundColor: lima})
 const inactiveCircle = style({backgroundColor: mercury})
 
-export const CircleStatus = ({isActive = false, size = '12px'}) => {
+export const CircleStatus = ({
+  isActive = false,
+  size = '12px',
+  className = ''
+}) => {
   const circle = style({
     borderRadius: '50%',
     width: size,
@@ -32,18 +41,31 @@ export const GistItem = ({
   localFiles,
   fileName,
   gist,
-  downloadGist
+  downloadGist,
+  isDownloading
 }) => {
   const isActive = localFiles.indexOf(fileName) !== -1
+  const downloadText = merge(
+    flex[0],
+    body,
+    colorGrey,
+    marginRightSmall
+  )
   return (
     <div {...listSpacing} {...displayFlex}>
       <div {...subtitle} {...colorGrey} {...flex[1]}>{fileName}</div>
-      <div {...flex[0]}>
-        {isActive
-          ? null
-          : <button onClick={() => downloadGist(gist)}>download</button>
-        }
-        <CircleStatus isActive={isActive} />
+      <div {...flex[0]} {...displayFlex} {...alignItems.center}>
+        <div {...downloadText}>
+          {isActive
+            ? null
+            : isDownloading
+              ? 'downloading...'
+              : <span onClick={() => downloadGist(gist)}>download</span>
+          }
+        </div>
+        <div {...flex[0]}>
+          <CircleStatus isActive={isActive} />
+        </div>
       </div>
     </div>
   )
@@ -53,7 +75,8 @@ export const GistList = ({
   user,
   gists,
   localFiles,
-  downloadGist
+  downloadGist,
+  isDownloading
 }) => (
   <div>
     {gists
@@ -62,6 +85,7 @@ export const GistList = ({
       .map(g => (
         <GistItem
           {...g}
+          isDownloading={g.gist.id === isDownloading}
           downloadGist={downloadGist}
           localFiles={localFiles}
         />
