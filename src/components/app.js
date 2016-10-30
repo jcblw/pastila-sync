@@ -1,7 +1,7 @@
 import React from 'react'
 import {style} from 'glamor'
 import {Form} from './form'
-import {GistList} from './gist-list'
+import GistList from './gist-list'
 import BottomBar from './bottom-bar'
 import TopBar from './top-bar'
 import {flex, displayFlex, column, flexGrow, flexShrink} from '../styles/flex'

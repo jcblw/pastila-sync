@@ -1,5 +1,6 @@
 
 import React from 'react'
+import IconAction from './icon-action'
 import {title} from '../styles/fonts'
 import {colorTundora} from '../styles/colors'
 import {flex, displayFlex, alignItems} from '../styles/flex'
@@ -20,8 +21,20 @@ export default ({
         onClick={() => changeView(nextView)}
       >
         {gistCurrentView === 'settings'
-          ? <Back />
-          : <Settings />
+          ? (
+            <IconAction
+              key='back'
+              Icon={Back}
+              tip='Back to gists'
+            />
+          )
+          : (
+            <IconAction
+              key='settings'
+              Icon={Settings}
+              tip='Settings'
+            />
+          )
         }
       </div>
     </div>
