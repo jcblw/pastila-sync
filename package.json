@@ -2,13 +2,14 @@
   "name": "pastila-sync",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "electron app.js",
     "start-test": "node -r dotenv/config dist/app",
     "build": "babel src --out-dir dist",
     "watch": "babel src --out-dir dist -w",
-    "test": "standard src"
+    "test": "standard src",
+    "pkg": "npm run build && electron-packager . 'Pastila Sync' --overwrite --out=builds"
   },
   "babel": {
     "plugins": [
@@ -41,6 +42,7 @@
     "babel-plugin-transform-async-to-generator": "^6.16.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.16.0",
     "babel-plugin-transform-react-jsx": "^6.8.0",
+    "electron-packager": "^8.2.0",
     "electron-prebuilt": "^1.4.3",
     "standard": "^8.4.0"
   }

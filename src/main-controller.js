@@ -49,11 +49,15 @@ export default async function start (dir) {
   const authToken = config.get('gist-key')
   const getConfigObj = getConfigObject(config.get.bind(config), authToken)
   const currentConfig = await getConfigObj(configKeys)
+  const assets = {
+    active: path.resolve(dir, 'assets/active.png'),
+    inactive: path.resolve(dir, 'assets/inactive.png')
+  }
   const mb = menubar({
     dir,
     icon: currentConfig.gistSyncing
-      ? 'assets/active.png'
-      : 'assets/inactive.png'
+      ? assets.active
+      : assets.inactive
   })
   let sync = currentConfig.gistKey && currentConfig.gistDirectory
     ? createSync(currentConfig, config)
@@ -111,8 +115,8 @@ export default async function start (dir) {
       if (isDiffAndPresent(nextConfig.gistSyncing, currentConfig.gistSyncing)) {
         const method = nextConfig.gistSyncing ? 'resumeWatcher' : 'pauseWatcher'
         const icon = nextConfig.gistSyncing
-          ? 'assets/active.png'
-          : 'assets/inactive.png'
+          ? assets.active
+          : assets.inactive
         config.set(toDashCase('gistSyncing'), nextConfig.gistSyncing)
         if (sync) {
           sync[method]()
