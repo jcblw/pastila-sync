@@ -17,7 +17,10 @@ const overflowAuto = style({overflow: 'auto'})
 export const App = (props) => (
   <div {...displayFlex} {...column} {...fullHeight}>
     <div {...flex[0]} {...barSpacing} {...whiteBG} {...boxShadow}>
-      <TopBar {...props} />
+      <TopBar
+        {...props}
+        allowBack={props.gistDirectory && props.gistKey}
+      />
     </div>
     <div {...flex[1]} {...flexGrow[1]} {...flexShrink[1]} {...overflowAuto}>
       {props.gistCurrentView === 'settings'

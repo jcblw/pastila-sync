@@ -86,7 +86,7 @@ export default async function start (dir) {
   }
   const mb = menubar({
     dir,
-    preloadWindow: false,
+    preloadWindow: true,
     tooltip: 'Pastila Sync',
     icon: currentConfig.gistSyncing
       ? assets.active

@@ -9,7 +9,8 @@ import {Back, Settings} from './icons'
 export default ({
   user,
   gistCurrentView,
-  changeView
+  changeView,
+  allowBack
 }) => {
   const nextView = gistCurrentView === 'settings' ? 'gists' : 'settings'
   return (
@@ -20,21 +21,23 @@ export default ({
         {...alignItems.center}
         onClick={() => changeView(nextView)}
       >
-        {gistCurrentView === 'settings'
-          ? (
-            <IconAction
-              key='back'
-              Icon={Back}
-              tip='Back to gists'
-            />
-          )
-          : (
-            <IconAction
-              key='settings'
-              Icon={Settings}
-              tip='Settings'
-            />
-          )
+        {allowBack
+          ? gistCurrentView === 'settings'
+            ? (
+              <IconAction
+                key='back'
+                Icon={Back}
+                tip='Back to gists'
+              />
+            )
+            : (
+              <IconAction
+                key='settings'
+                Icon={Settings}
+                tip='Settings'
+              />
+            )
+          : null
         }
       </div>
     </div>
