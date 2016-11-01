@@ -54,10 +54,14 @@ const copyLink = gist => {
   clipboard.writeText(gist.html_url)
 }
 
+const closeApp = () => {
+  ipcRenderer.send('asynchronous-message', 'closeApp')
+}
+
 const update = async () => {
   // possibly pass this from somewhere to make function pure
   const props = Object.assign(
-    {onSubmit, downloadGist, openFile, copyLink, openInBrowser},
+    {onSubmit, downloadGist, openFile, copyLink, openInBrowser, closeApp},
     bindActionCreators(actions, store.dispatch),
     store.getState(),
     await getConfigObj(configKeys, config.get('gist-key'))

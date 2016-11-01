@@ -9,7 +9,8 @@
     "build": "babel src --out-dir dist",
     "watch": "babel src --out-dir dist -w",
     "test": "standard src",
-    "pkg": "npm run build && electron-packager . 'Pastila Sync' --overwrite --out=builds"
+    "packager": "electron-packager . 'Pastila Sync' --overwrite --out=builds --icon=assets/icon.icns",
+    "pkg": "npm run build && npm run packager"
   },
   "babel": {
     "plugins": [
@@ -30,12 +31,13 @@
     "gist-sync": "^0.2.0",
     "glamor": "^2.17.12",
     "glamour": "^1.2.3",
-    "menubar": "^5.1.0",
+    "@jcblw/menubar": "^5.1.0",
     "mz": "^2.4.0",
     "open": "^0.0.5",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
-    "redux": "^3.6.0"
+    "redux": "^3.6.0",
+    "user-home": "^2.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",

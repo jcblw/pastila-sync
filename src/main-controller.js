@@ -1,5 +1,7 @@
 import menubar from 'menubar'
 import path from 'path'
+import userHome from 'user-home'
+import fs from 'mz/fs'
 import Config from 'electron-config'
 import {ipcMain} from 'electron'
 import GistsSync from 'gist-sync'
@@ -11,6 +13,17 @@ const configKeys = [
   'gist-directory',
   'gist-syncing'
 ]
+const defaultDir = `${userHome}/gist-sync`
+const configDefaults = {
+  'gist-directory': {
+    val: defaultDir,
+    setup: async () => {
+      try {
+        await fs.mkdir(defaultDir) // this errors if it
+      } catch (e) { }
+    }
+  }
+}
 
 export function createSync (currentConfig, config) {
   const sync = GistsSync.of(currentConfig.gistDirectory, {
@@ -30,6 +43,7 @@ export function createSync (currentConfig, config) {
 
   sync.on('error', (err) => {
     console.log('error', err)
+    // display something to the user here
   })
 
   return sync
@@ -42,10 +56,27 @@ process.on('unhandledRejection', (reason, p) => {
     ' reason: ',
     reason
   )
+  process.exit(1)
 })
+
+const createDefaults = async (config, defaults) => {
+  for (const key in defaults) {
+    const existingVal = config.get(key)
+    if (typeof existingVal === 'undefined') {
+      const {val, setup} = defaults[key]
+      if (typeof setup === 'function') {
+        await setup()
+      }
+      config.set(key, val)
+    }
+  }
+}
 
 export default async function start (dir) {
   const config = new Config()
+
+  await createDefaults(config, configDefaults)
+
   const authToken = config.get('gist-key')
   const getConfigObj = getConfigObject(config.get.bind(config), authToken)
   const currentConfig = await getConfigObj(configKeys)
@@ -55,6 +86,8 @@ export default async function start (dir) {
   }
   const mb = menubar({
     dir,
+    preloadWindow: false,
+    tooltip: 'Pastila Sync',
     icon: currentConfig.gistSyncing
       ? assets.active
       : assets.inactive
@@ -92,6 +125,9 @@ export default async function start (dir) {
     },
     openInBrowser ({html_url: htmlUrl}) {
       open(htmlUrl)
+    },
+    closeApp () {
+      process.exit()
     },
     'config:changed' (nextConfig) {
       if (isDiffAndPresent(nextConfig.gistKey, currentConfig.gistKey)) {
