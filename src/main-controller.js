@@ -1,10 +1,11 @@
-import menubar from 'menubar'
+import menubar from '@jcblw/menubar'
 import path from 'path'
 import userHome from 'user-home'
 import fs from 'mz/fs'
 import Config from 'electron-config'
-import {ipcMain} from 'electron'
+import {ipcMain, Menu, app, shell} from 'electron'
 import GistsSync from 'gist-sync'
+import defaultMenu from 'electron-default-menu'
 import open from 'open'
 import {getConfigObject, toDashCase, isDiffAndPresent} from './helpers'
 
@@ -103,6 +104,10 @@ export default async function start (dir) {
     ) {
       mb.showWindow()
     }
+    const menu = Menu.buildFromTemplate(
+      defaultMenu(app, shell)
+    )
+    Menu.setApplicationMenu(menu)
   })
 
   const publicMethods = {
@@ -149,13 +154,15 @@ export default async function start (dir) {
       }
 
       if (isDiffAndPresent(nextConfig.gistSyncing, currentConfig.gistSyncing)) {
-        const method = nextConfig.gistSyncing ? 'resumeWatcher' : 'pauseWatcher'
         const icon = nextConfig.gistSyncing
           ? assets.active
           : assets.inactive
         config.set(toDashCase('gistSyncing'), nextConfig.gistSyncing)
-        if (sync) {
-          sync[method]()
+        if (nextConfig.gistSyncing) {
+          sync.getAllGist() // refresh cache
+          sync.resumeWatcher()
+        } else {
+          sync.pauseWatcher()
         }
         mb.setOption('icon', icon)
       }
@@ -167,6 +174,7 @@ export default async function start (dir) {
 
   mb.on('after-create-window', () => {
     mb.window.loadURL(`file://${dir}/index.html`)
+    mb.window.webContents.openDevTools()
   })
 
   ipcMain.on('asynchronous-message', (event, eventName, ...args) => {

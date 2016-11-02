@@ -60,6 +60,7 @@ export default (gist) => {
               ? <Download color={lima} />
               : (
                 <IconAction
+                  args={[gist]}
                   tip='Download'
                   Icon={Download}
                   action={downloadGist}

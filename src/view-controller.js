@@ -20,7 +20,6 @@ const configKeys = [
   'gist-syncing'
 ]
 const store = configStore()
-
 const onSubmit = (e, data) => {
   Object.keys(data)
     .forEach(key => {
@@ -32,6 +31,7 @@ const onSubmit = (e, data) => {
 }
 
 const downloadGist = gist => {
+  console.log(gist)
   if (gist && gist.id) {
     store.dispatch(actions.download(gist))
     ipcRenderer.send('asynchronous-message', 'downloadFile', gist)

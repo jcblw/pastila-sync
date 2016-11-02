@@ -14,20 +14,22 @@ export default ({
   openInBrowser
 }) => (
   <div>
-    {gists
-      .map(decorateGistObj({localFiles, isDownloading}))
-      .filter(gist => gist.fileName)
-      .sort(sortByKeyPresence('isActive'))
-      .map(gist => (
-        <GistItem
-          key={`gist-${gist.id}`}
-          {...gist}
-          downloadGist={downloadGist}
-          openFile={openFile}
-          copyLink={copyLink}
-          openInBrowser={openInBrowser}
-        />
-      ))
+    {gists && gists.length
+      ? gists
+        .map(decorateGistObj({localFiles, isDownloading}))
+        .filter(gist => gist.fileName)
+        .sort(sortByKeyPresence('isActive'))
+        .map(gist => (
+          <GistItem
+            key={`gist-${gist.id}`}
+            {...gist}
+            downloadGist={downloadGist}
+            openFile={openFile}
+            copyLink={copyLink}
+            openInBrowser={openInBrowser}
+          />
+        ))
+      : <p>No gist found</p>
     }
   </div>
 )

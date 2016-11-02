@@ -15,7 +15,7 @@ export default ({
   const nextView = gistCurrentView === 'settings' ? 'gists' : 'settings'
   return (
     <div {...displayFlex}>
-      <h3 {...flex[1]} {...title} {...colorTundora}>{user.login ? `${user.login}'s ` : null}{gistCurrentView}</h3>
+      <h3 {...flex[1]} {...title} {...colorTundora}>{user && user.login ? `${user.login}'s ` : null}{gistCurrentView}</h3>
       <div
         {...flex[0]}
         {...alignItems.center}
