@@ -8,7 +8,7 @@ import defaultMenu from 'electron-default-menu'
 import {getConfigObject} from './helpers'
 import {checkUpdates} from './auto-update'
 import {createSync} from './create-sync'
-import {getMethods} from 'ipc-methods'
+import {getMethods} from './ipc-methods'
 
 checkUpdates()
 
