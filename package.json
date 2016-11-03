@@ -59,7 +59,7 @@
     }
   },
   "directories": {
-    "buildResources": "assets",
+    "buildResources": "build-assets",
     "output": "builds"
   }
 }
