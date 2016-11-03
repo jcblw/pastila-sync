@@ -1,6 +1,6 @@
 {
   "name": "pastila-sync",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Small menubar app that acts like dropbox sync but with gist files.",
   "main": "app.js",
   "scripts": {
