@@ -4,10 +4,13 @@ import userHome from 'user-home'
 import fs from 'mz/fs'
 import Config from 'electron-config'
 import {ipcMain, Menu, app, shell} from 'electron'
-import GistsSync from 'gist-sync'
 import defaultMenu from 'electron-default-menu'
-import open from 'open'
-import {getConfigObject, toDashCase, isDiffAndPresent} from './helpers'
+import {getConfigObject} from './helpers'
+import {checkUpdates} from './auto-update'
+import {createSync} from './create-sync'
+import {getMethods} from 'ipc-methods'
+
+checkUpdates()
 
 const configKeys = [
   'gist-key',
@@ -24,30 +27,6 @@ const configDefaults = {
       } catch (e) { }
     }
   }
-}
-
-export function createSync (currentConfig, config) {
-  const sync = GistsSync.of(currentConfig.gistDirectory, {
-    applicationToken: currentConfig.gistKey,
-    isWatching: currentConfig.gistSyncing,
-    setCache: (name, content) => {
-      config.set(name, content)
-      return Promise.resolve()
-    },
-    clearCache: () => {
-      return Promise.resolve()
-    },
-    getCache: (name) => Promise.resolve(
-      config.get(name)
-    )
-  })
-
-  sync.on('error', (err) => {
-    console.log('error', err)
-    // display something to the user here
-  })
-
-  return sync
 }
 
 process.on('unhandledRejection', (reason, p) => {
@@ -97,6 +76,11 @@ export default async function start (dir) {
     ? createSync(currentConfig, config)
     : null
 
+  // TODO: figure out how to make a better solution for this
+  const updateSync = (newSync) => {
+    sync = newSync
+  }
+
   mb.on('ready', () => {
     if (
       !currentConfig.gistDirectory ||
@@ -110,74 +94,19 @@ export default async function start (dir) {
     Menu.setApplicationMenu(menu)
   })
 
-  const publicMethods = {
-    async downloadFile (gist, reply) {
-      if (!sync) return
-      await sync.downloadFile(gist)
-      reply({
-        type: 'DOWNLOAD_FILE_COMPLETED',
-        gist
-      })
-    },
-    openFile ({fileName}) {
-      const directory = config.get('gist-directory')
-      const filePath = path.resolve(
-        process.cwd(),
-        directory,
-        fileName
-      )
-      open(filePath)
-    },
-    openInBrowser ({html_url: htmlUrl}) {
-      open(htmlUrl)
-    },
-    closeApp () {
-      process.exit()
-    },
-    'config:changed' (nextConfig) {
-      if (isDiffAndPresent(nextConfig.gistKey, currentConfig.gistKey)) {
-        if (!sync && (currentConfig.gistDirectory || nextConfig.gistDirectory)) {
-          sync = createSync(nextConfig, config)
-        }
-        sync.updateToken(nextConfig.gistKey)
-        config.set(toDashCase('gistKey'), nextConfig.gistKey)
-      }
-
-      if (isDiffAndPresent(nextConfig.gistDirectory, currentConfig.gistDirectory)) {
-        if (!sync && (currentConfig.gistKey || nextConfig.gistKey)) {
-          sync = createSync(nextConfig, config)
-        }
-        if (sync) {
-          sync.setDirectory(nextConfig.gistDirectory)
-        }
-        config.set(toDashCase('gistDirectory'), nextConfig.gistDirectory)
-      }
-
-      if (isDiffAndPresent(nextConfig.gistSyncing, currentConfig.gistSyncing)) {
-        const icon = nextConfig.gistSyncing
-          ? assets.active
-          : assets.inactive
-        config.set(toDashCase('gistSyncing'), nextConfig.gistSyncing)
-        if (nextConfig.gistSyncing) {
-          sync.getAllGist() // refresh cache
-          sync.resumeWatcher()
-        } else {
-          sync.pauseWatcher()
-        }
-        mb.setOption('icon', icon)
-      }
-
-      // set config to current
-      Object.assign(currentConfig, nextConfig)
-    }
-  }
-
   mb.on('after-create-window', () => {
     mb.window.loadURL(`file://${dir}/index.html`)
-    mb.window.webContents.openDevTools()
   })
 
   ipcMain.on('asynchronous-message', (event, eventName, ...args) => {
+    const publicMethods = getMethods({
+      sync,
+      config,
+      currentConfig,
+      mb,
+      assets,
+      updateSync
+    })
     if (typeof publicMethods[eventName] === 'function') {
       return publicMethods[eventName](
         ...args,
