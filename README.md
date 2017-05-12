@@ -1,5 +1,7 @@
 # Pastila Sync
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/jcblw/pastila-sync.svg)](https://greenkeeper.io/)
+
 This is a small menubar app that acts like dropbox sync but with gist files. Its still in early dev and would love feedback on it.
 
 ![screenshot gist](https://github.com/jcblw/pastila-sync/blob/master/assets/screenshot-gists.png?raw=true)
