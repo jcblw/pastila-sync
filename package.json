@@ -26,11 +26,11 @@
   "dependencies": {
     "@jcblw/menubar": "^5.1.0",
     "async-fn-catch": "^0.1.0",
-    "auto-bind": "^0.1.0",
-    "dotenv": "^2.0.0",
-    "electron-config": "^0.2.1",
+    "auto-bind": "^1.1.0",
+    "dotenv": "^4.0.0",
+    "electron-config": "^1.0.0",
     "electron-default-menu": "^1.0.0",
-    "eventemitter2": "^2.1.3",
+    "eventemitter2": "^4.1.0",
     "gist-sync": "^0.2.0",
     "glamor": "^2.17.12",
     "glamour": "^1.2.3",
@@ -47,10 +47,10 @@
     "babel-plugin-transform-async-to-generator": "^6.16.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.16.0",
     "babel-plugin-transform-react-jsx": "^6.8.0",
-    "electron-builder": "^7.18.0",
+    "electron-builder": "^17.5.0",
     "electron-packager": "^8.2.0",
     "electron-prebuilt": "^1.4.3",
-    "standard": "^8.4.0"
+    "standard": "^10.0.2"
   },
   "build": {
     "appId": "org.jcblw.pastila-sync",
